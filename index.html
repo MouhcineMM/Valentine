@@ -2,133 +2,160 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Question très innocente</title>
+  <title>…</title>
   <style>
     body {
-      font-family: 'Comic Sans MS', cursive;
-      text-align: center;
-      margin-top: 80px;
-      background-color: #ffe6f0;
+      margin: 0;
+      background: #111;
+      color: #ddd;
+      font-family: "Courier New", monospace;
       overflow: hidden;
-      transition: background-color 0.4s;
+    }
+
+    .center {
+      position: absolute;
+      top: 40%;
+      left: 10%;
+      transform: translate(0, -50%);
+      text-align: left;
+      animation: shake 6s infinite;
+      max-width: 40%;
     }
 
     h1 {
-      font-size: 2.5em;
+      font-size: 3em;
+      margin: 0;
+      animation: glitch 2s infinite;
     }
 
-    button {
-      font-size: 20px;
-      padding: 15px 30px;
-      margin: 20px;
-      cursor: pointer;
-      border: none;
-      border-radius: 15px;
-      position: relative;
+    p {
+      opacity: 0.7;
+      font-size: 1.1em;
+      margin-top: 20px;
     }
 
-    #yesBtn {
-      background-color: #ff5c8a;
-      color: white;
-      transition: transform 0.3s ease;
-      z-index: 2;
+    .meme-container {
+      position: absolute;
+      top: 40%;
+      right: 10%;
+      transform: translate(0, -50%);
+      width: 200px;
+      height: 200px;
+      perspective: 800px;
     }
 
-#noBtn {
-  background-color: #bfbfbf;
-  z-index: 3;
-  transition: top 0.4s ease, left 0.4s ease;
-}
+    .meme {
+      width: 100%;
+      height: 100%;
+      transition: transform 0.05s linear;
+      object-fit: contain;
+    }
 
+    @keyframes shake {
+      0% { transform: translate(0, -50%); }
+      20% { transform: translate(2px, -48%); }
+      40% { transform: translate(-2px, -52%); }
+      60% { transform: translate(1px, -49%); }
+      80% { transform: translate(-1px, -51%); }
+      100% { transform: translate(0, -50%); }
+    }
 
-    .heart {
+    @keyframes glitch {
+      0% { text-shadow: 2px 0 red; }
+      20% { text-shadow: -2px 0 cyan; }
+      40% { text-shadow: 2px 2px magenta; }
+      60% { text-shadow: -2px -2px lime; }
+      80% { text-shadow: 1px 0 blue; }
+      100% { text-shadow: 0 0 white; }
+    }
+
+    .emoji {
       position: fixed;
-      font-size: 30px;
-      animation: fall 3s linear forwards;
+      top: -40px;
+      font-size: 24px;
+      animation: fall linear forwards;
+      opacity: 0.8;
     }
 
     @keyframes fall {
-      from {
-        transform: translateY(-50px);
-        opacity: 1;
-      }
       to {
-        transform: translateY(100vh);
+        transform: translateY(110vh) rotate(360deg);
         opacity: 0;
       }
+    }
+
+    .message {
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 0.9em;
+      opacity: 0.4;
     }
   </style>
 </head>
 <body>
 
-  <h1>Veux-tu être ma Valentine ? 💘</h1>
+  <div class="center">
+    <h1>ok.</h1>
+    <p>
+      c’était pas important.<br>
+      enfin si.<br>
+      mais pas grave.<br>
+      <strong>j’ai fait tout ça pour un “HEHE”</strong>
+    </p>
+  </div>
 
-  <button id="yesBtn">OUI ❤️</button>
-  <button id="noBtn">Non</button>
+  <!-- Conteneur pour ton mème -->
+  <div class="meme-container">
+    <img id="meme" class="meme" src="images.jpg" alt="meme wtf">
+  </div>
+
+  <div class="message">
+    tout va bien. vraiment.
+  </div>
 
   <script>
+    const emojis = ["🫠","💀","🥀","🗑️","🤡","😐","😶","🥲"];
+
+    setInterval(() => {
+      const e = document.createElement("div");
+      e.className = "emoji";
+      e.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      e.style.left = Math.random() * 100 + "vw";
+      e.style.animationDuration = (3 + Math.random() * 4) + "s";
+      document.body.appendChild(e);
+
+      setTimeout(() => e.remove(), 7000);
+    }, 150);
+
+    const texts = [
+      "c’est fou comme on s’habitue.",
+      "j’avais mal interprété.",
+      "classique.",
+      "je note.",
+      "ça ira.",
+      "mdr."
+    ];
+
+    setInterval(() => {
+      document.querySelector(".message").textContent =
+        texts[Math.floor(Math.random() * texts.length)];
+    }, 3000);
+
+    // Animation WTF du meme
+    const meme = document.getElementById("meme");
+    let angle = 0;
     let scale = 1;
-    let noClicks = 0;
+    let direction = 1;
 
-    const messages = [
-      "T'es sûr(e) ? 🥺",
-      "Mais pourquoi 😭",
-      "Réfléchis encore 😐",
-      "Ça commence à faire beaucoup là 😑",
-      "Je le prends mal 😈",
-      "DERNIER AVERTISSEMENT ⚠️",
-      "Tu n'as PLUS le choix 😏"
-    ];
+    setInterval(() => {
+      angle += 5; // rotation
+      scale += 0.05 * direction; // zoom in/out
+      if (scale > 1.5 || scale < 0.8) direction *= -1;
+      meme.style.transform = `rotate(${angle}deg) scale(${scale})`;
+    }, 50);
 
-    const colors = [
-      "#ffe6f0",
-      "#ffd6e8",
-      "#ffb3d9",
-      "#ff99cc",
-      "#ff80bf"
-    ];
-
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
-
-    noBtn.addEventListener("click", () => {
-      // Grossir le OUI
-      scale += 0.35;
-      yesBtn.style.transform = `scale(${scale})`;
-
-      // Changer le texte du NON
-      noBtn.textContent = messages[Math.min(noClicks, messages.length - 1)];
-
-      // Changer le fond
-      document.body.style.backgroundColor =
-        colors[Math.floor(Math.random() * colors.length)];
-
-      noClicks++;
-    });
-
-    // Le NON fuit la souris (chaos)
-    noBtn.addEventListener("mouseover", () => {
-      const x = Math.random() * (window.innerWidth - 150);
-      const y = Math.random() * (window.innerHeight - 150);
-      noBtn.style.position = "absolute";
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
-    });
-
-    yesBtn.addEventListener("click", () => {
-      document.body.innerHTML = "<h1>💖 OUIIIII 💖<br>Meilleure décision de ta vie 😌</h1>";
-
-      // Pluie de cœurs
-      setInterval(() => {
-        const heart = document.createElement("div");
-        heart.classList.add("heart");
-        heart.textContent = "💗";
-        heart.style.left = Math.random() * 100 + "vw";
-        document.body.appendChild(heart);
-
-        setTimeout(() => heart.remove(), 3000);
-      }, 200);
-    });
   </script>
 
 </body>
