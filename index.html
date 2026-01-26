@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Question très innocente</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive;
+      text-align: center;
+      margin-top: 80px;
+      background-color: #ffe6f0;
+      overflow: hidden;
+      transition: background-color 0.4s;
+    }
+
+    h1 {
+      font-size: 2.5em;
+    }
+
+    button {
+      font-size: 20px;
+      padding: 15px 30px;
+      margin: 20px;
+      cursor: pointer;
+      border: none;
+      border-radius: 15px;
+      position: relative;
+    }
+
+    #yesBtn {
+      background-color: #ff5c8a;
+      color: white;
+      transition: transform 0.3s ease;
+      z-index: 2;
+    }
+
+#noBtn {
+  background-color: #bfbfbf;
+  z-index: 3;
+  transition: top 0.4s ease, left 0.4s ease;
+}
+
+
+    .heart {
+      position: fixed;
+      font-size: 30px;
+      animation: fall 3s linear forwards;
+    }
+
+    @keyframes fall {
+      from {
+        transform: translateY(-50px);
+        opacity: 1;
+      }
+      to {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Veux-tu être ma Valentine ? 💘</h1>
+
+  <button id="yesBtn">OUI ❤️</button>
+  <button id="noBtn">Non</button>
+
+  <script>
+    let scale = 1;
+    let noClicks = 0;
+
+    const messages = [
+      "T'es sûr(e) ? 🥺",
+      "Mais pourquoi 😭",
+      "Réfléchis encore 😐",
+      "Ça commence à faire beaucoup là 😑",
+      "Je le prends mal 😈",
+      "DERNIER AVERTISSEMENT ⚠️",
+      "Tu n'as PLUS le choix 😏"
+    ];
+
+    const colors = [
+      "#ffe6f0",
+      "#ffd6e8",
+      "#ffb3d9",
+      "#ff99cc",
+      "#ff80bf"
+    ];
+
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+
+    noBtn.addEventListener("click", () => {
+      // Grossir le OUI
+      scale += 0.35;
+      yesBtn.style.transform = `scale(${scale})`;
+
+      // Changer le texte du NON
+      noBtn.textContent = messages[Math.min(noClicks, messages.length - 1)];
+
+      // Changer le fond
+      document.body.style.backgroundColor =
+        colors[Math.floor(Math.random() * colors.length)];
+
+      noClicks++;
+    });
+
+    // Le NON fuit la souris (chaos)
+    noBtn.addEventListener("mouseover", () => {
+      const x = Math.random() * (window.innerWidth - 150);
+      const y = Math.random() * (window.innerHeight - 150);
+      noBtn.style.position = "absolute";
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+    });
+
+    yesBtn.addEventListener("click", () => {
+      document.body.innerHTML = "<h1>💖 OUIIIII 💖<br>Meilleure décision de ta vie 😌</h1>";
+
+      // Pluie de cœurs
+      setInterval(() => {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+        heart.textContent = "💗";
+        heart.style.left = Math.random() * 100 + "vw";
+        document.body.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 3000);
+      }, 200);
+    });
+  </script>
+
+</body>
+</html>
