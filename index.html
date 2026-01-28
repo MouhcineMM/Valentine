@@ -1,162 +1,245 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>…</title>
-  <style>
+<meta charset="UTF-8">
+<title>Curiosité détectée</title>
+
+<style>
     body {
-      margin: 0;
-      background: #111;
-      color: #ddd;
-      font-family: "Courier New", monospace;
-      overflow: hidden;
+        margin: 0;
+        background: #fafafa;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        height: 100vh;
+        overflow: hidden;
+        transition: background 6s ease;
+        cursor: none;
     }
 
-    .center {
-      position: absolute;
-      top: 40%;
-      left: 10%;
-      transform: translate(0, -50%);
-      text-align: left;
-      animation: shake 6s infinite;
-      max-width: 40%;
+    #intro, #hope {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        transition: opacity 2s ease;
+        white-space: nowrap;
     }
 
-    h1 {
-      font-size: 3em;
-      margin: 0;
-      animation: glitch 2s infinite;
+    #intro {
+        font-size: 1.5rem;
+        color: #111;
+        z-index: 2;
     }
 
-    p {
-      opacity: 0.7;
-      font-size: 1.1em;
-      margin-top: 20px;
-    }
-
-    .meme-container {
-      position: absolute;
-      top: 40%;
-      right: 10%;
-      transform: translate(0, -50%);
-      width: 200px;
-      height: 200px;
-      perspective: 800px;
-    }
-
-    .meme {
-      width: 100%;
-      height: 100%;
-      transition: transform 0.05s linear;
-      object-fit: contain;
-    }
-
-    @keyframes shake {
-      0% { transform: translate(0, -50%); }
-      20% { transform: translate(2px, -48%); }
-      40% { transform: translate(-2px, -52%); }
-      60% { transform: translate(1px, -49%); }
-      80% { transform: translate(-1px, -51%); }
-      100% { transform: translate(0, -50%); }
-    }
-
-    @keyframes glitch {
-      0% { text-shadow: 2px 0 red; }
-      20% { text-shadow: -2px 0 cyan; }
-      40% { text-shadow: 2px 2px magenta; }
-      60% { text-shadow: -2px -2px lime; }
-      80% { text-shadow: 1px 0 blue; }
-      100% { text-shadow: 0 0 white; }
-    }
-
-    .emoji {
-      position: fixed;
-      top: -40px;
-      font-size: 24px;
-      animation: fall linear forwards;
-      opacity: 0.8;
-    }
-
-    @keyframes fall {
-      to {
-        transform: translateY(110vh) rotate(360deg);
+    #hope {
+        font-size: 1.3rem;
+        letter-spacing: 0.04em;
+        color: #fff;
         opacity: 0;
-      }
+        z-index: 10;
     }
 
-    .message {
-      position: fixed;
-      bottom: 20px;
-      width: 100%;
-      text-align: center;
-      font-size: 0.9em;
-      opacity: 0.4;
+    .question {
+        position: absolute;
+        max-width: 35vw;
+        font-size: 0.95rem;
+        opacity: 0.8;
+        pointer-events: none;
+        transition: opacity 5s linear;
+        z-index: 1;
     }
-  </style>
+
+    canvas#ink {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 3;
+        transition: opacity 6s ease;
+    }
+</style>
 </head>
+
 <body>
 
-  <div class="center">
-    <h1>ok.</h1>
-    <p>
-      c’était pas important.<br>
-      enfin si.<br>
-      mais pas grave.<br>
-      <strong>j’ai fait tout ça pour un “HEHE”</strong>
-    </p>
-  </div>
+<div id="intro">Tu n’étais pas censé cliquer.</div>
+<div id="hope"></div>
+<canvas id="ink"></canvas>
 
-  <!-- Conteneur pour ton mème -->
-  <div class="meme-container">
-    <img id="meme" class="meme" src="images.jpg" alt="meme wtf">
-  </div>
+<script>
+/* ================= INTRO ================= */
+const introMessages = [
+    "Tu n’étais pas censé cliquer.",
+    "Mais tu l’as fait.",
+    "Par curiosité.",
+    "C’est une qualité rare.",
+    "Surtout ici.",
+    "Ce site n’a rien à vendre.",
+    "Juste une observation.",
+    "Tu lis encore.",
+    "On devrait probablement parler."
+];
 
-  <div class="message">
-    tout va bien. vraiment.
-  </div>
+let introIndex = 0;
+const intro = document.getElementById("intro");
 
-  <script>
-    const emojis = ["🫠","💀","🥀","🗑️","🤡","😐","😶","🥲"];
+const introInterval = setInterval(() => {
+    intro.style.opacity = 0;
+    setTimeout(() => {
+        introIndex++;
+        if (introIndex < introMessages.length) {
+            intro.innerText = introMessages[introIndex];
+            intro.style.opacity = 1;
+        } else {
+            clearInterval(introInterval);
+            intro.style.display = "none";
+            launchChaos();
+            startInk();
+            setTimeout(selfDestruct, 45000);
+        }
+    }, 2000);
+}, 4000);
 
-    setInterval(() => {
-      const e = document.createElement("div");
-      e.className = "emoji";
-      e.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      e.style.left = Math.random() * 100 + "vw";
-      e.style.animationDuration = (3 + Math.random() * 4) + "s";
-      document.body.appendChild(e);
+/* ================= QUESTIONS INTIMES ================= */
+const questions = [
+    "Est-ce que tu fais vraiment ce que tu choisis ?",
+    "Qu’est-ce que tu ignores volontairement ?",
+    "Qui regarde vraiment ?",
+    "À quoi ressemble ta curiosité ?",
+    "Qu’as-tu appris aujourd’hui par toi-même ?",
+    "Pourquoi continues-tu à chercher ?",
+    "Est-ce que tu observes ou tu comprends ?",
+    
+    "Est-ce que la fin justifie parfois les moyens ?",
 
-      setTimeout(() => e.remove(), 7000);
-    }, 150);
+    "La croissance est-elle une illusion ?",
 
-    const texts = [
-      "c’est fou comme on s’habitue.",
-      "j’avais mal interprété.",
-      "classique.",
-      "je note.",
-      "ça ira.",
-      "mdr."
-    ];
+    "À qui appartient l’espace public ?",
 
-    setInterval(() => {
-      document.querySelector(".message").textContent =
-        texts[Math.floor(Math.random() * texts.length)];
-    }, 3000);
+    "Est-ce que le progrès doit avoir des limites ?",
 
-    // Animation WTF du meme
-    const meme = document.getElementById("meme");
-    let angle = 0;
-    let scale = 1;
-    let direction = 1;
+    "Sommes-nous encore capables d’attention ?",
 
-    setInterval(() => {
-      angle += 5; // rotation
-      scale += 0.05 * direction; // zoom in/out
-      if (scale > 1.5 || scale < 0.8) direction *= -1;
-      meme.style.transform = `rotate(${angle}deg) scale(${scale})`;
-    }, 50);
+    "La morale est-elle contextuelle ?",
 
-  </script>
+    "Est-ce que la transparence est toujours souhaitable ?",
+
+    "Peut-on séparer information et influence ?",
+
+    "La complexité est-elle devenue une excuse ?",
+    "Que ferais-tu si rien n’était imposé ?"
+];
+
+function rand(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function launchChaos() {
+    let i = 0;
+    const chaos = setInterval(() => {
+        if (i >= questions.length) {
+            clearInterval(chaos);
+            return;
+        }
+        const q = document.createElement("div");
+        q.className = "question";
+        q.innerText = questions[i];
+
+        q.style.top = rand(10, 80) + "vh";
+        q.style.left = rand(10, 80) + "vw";
+        q.style.transform = `rotate(${rand(-180,180)}deg) scale(${rand(0.8,1.4)})`;
+        q.style.opacity = rand(0.3,0.9);
+
+        document.body.appendChild(q);
+
+        setTimeout(() => q.style.opacity = 0, rand(12000,18000));
+        i++;
+    }, 1300);
+}
+
+/* ================= ENCRE ROUGE ================= */
+const canvas = document.getElementById("ink");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+}
+addEventListener("resize", resize);
+resize();
+
+let blobs = [];
+let redness = 0;
+
+function addBlob() {
+    blobs.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        r: 0,
+        maxR: 500 + Math.random()*500,
+        speed: 0.3 + Math.random(),
+        alpha: 0.04 + Math.random()*0.05
+    });
+}
+
+function startInk() {
+    setInterval(addBlob, 900);
+    requestAnimationFrame(drawInk);
+}
+
+function drawInk() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    redness = Math.min(redness + 0.0003, 0.9);
+    ctx.fillStyle = `rgba(120,0,0,${redness})`;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    blobs.forEach(b => {
+        b.r += b.speed;
+        const g = ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r);
+        g.addColorStop(0,`rgba(160,0,0,${b.alpha})`);
+        g.addColorStop(1,"rgba(160,0,0,0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+        ctx.fill();
+    });
+
+    blobs = blobs.filter(b => b.r < b.maxR);
+    requestAnimationFrame(drawInk);
+}
+
+/* ================= AUTO-DESTRUCTION & ESPOIR ================= */
+const hopePhrases = [
+    "Ce n’est pas fini.",
+    "Tout n’est pas perdu.",
+    "Quelque chose résiste.",
+    "Il reste des questions.",
+    "Et des esprits pour les poser.",
+    "Tant qu’il y aura des hommes curieux,",
+    "la connaissance continuera d’avancer."
+];
+
+function selfDestruct() {
+    document.querySelectorAll(".question").forEach(q => q.style.opacity = 0);
+    canvas.style.opacity = 0;
+    document.body.style.background = "#000";
+
+    const hope = document.getElementById("hope");
+    let i = 0;
+
+    const hopeInterval = setInterval(() => {
+        hope.style.opacity = 0;
+        setTimeout(() => {
+            hope.innerText = hopePhrases[i];
+            hope.style.opacity = 1;
+            i++;
+            if (i >= hopePhrases.length) clearInterval(hopeInterval);
+        }, 2000);
+    }, 6000);
+}
+</script>
 
 </body>
 </html>
